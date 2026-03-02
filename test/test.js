@@ -1,7 +1,7 @@
 'use strict';
 
-var chai = require('chai'),
-	chaiAsPromised = require('chai-as-promised'),
+const chai = require('chai'),
+	chaiAsPromised = require('chai-as-promised').default,
 	errors = require('../lib/errors'),
 	fs = require('fs-promise'),
 	langBuilder = require('../'),
@@ -10,7 +10,7 @@ var chai = require('chai'),
 	winston = require('winston');
 
 chai.use(chaiAsPromised);
-var expect = chai.expect;
+const expect = chai.expect;
 
 function removeDir(dir) {
 	return fs.remove(dir);
@@ -66,7 +66,7 @@ describe('langBuilder', function() {
 
 		it('should throw when file contains invalid JSON', function() {
 			var promise = langBuilder._readFile('./test/errors', 'invalid-json.json');
-			return expect(promise).to.eventually.be.rejectedWith('Unexpected token');
+			return expect(promise).to.eventually.be.rejectedWith('Expected property name or \'}\' in JSON at position 3 (line 2 column 2)');
 		});
 
 		it('should use empty object when file is empty', function(done) {
@@ -409,14 +409,14 @@ describe('langBuilder', function() {
 				fallback: 'fr'
 			};
 			langBuilder(opts, function(err) {
-				expect(err).to.not.be.defined;
+				expect(err).to.be.null;
 				done();
 			});
 		});
 
 		it('should pipe errors to the callback', function(done) {
 			langBuilder(null, function(err) {
-				expect(err).to.be.defined;
+				expect(err).to.not.be.null;
 				done();
 			});
 		});
@@ -452,7 +452,7 @@ describe('langBuilder', function() {
 				fallback: 'fr'
 			};
 			langBuilder(opts, function(err) {
-				expect(err).to.not.be.defined;
+				expect(err).to.be.null;
 
 				['fr.json', 'fr-CA.json', 'fr-FR.json'].forEach(function(langFile) {
 					expect(require('./temp/' + langFile))
