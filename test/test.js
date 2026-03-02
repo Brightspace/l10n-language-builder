@@ -5,7 +5,6 @@ const chai = require('chai'),
 	errors = require('../lib/errors'),
 	fs = require('fs-promise'),
 	langBuilder = require('../'),
-	Q = require('q'),
 	sinon = require('sinon'),
 	winston = require('winston');
 
@@ -30,7 +29,7 @@ describe('langBuilder', function() {
 		winston.warn.restore();
 		winston.error.restore();
 		winston.remove.restore();
-		return Q.all([removeDir('./test/temp'),removeDir('./test/temp2')]);
+		return Promise.all([removeDir('./test/temp'),removeDir('./test/temp2')]);
 	});
 
 	describe('find files', function() {
@@ -76,7 +75,7 @@ describe('langBuilder', function() {
 					expect(file.name).to.equal('empty-FILE');
 					expect(file.content).to.eql({});
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 		it('should return filename and parsed content', function(done) {
@@ -86,7 +85,7 @@ describe('langBuilder', function() {
 					expect(file.name).to.equal('fr-CA');
 					expect(file.content).to.have.property('B','b-CA');
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 	});
@@ -347,7 +346,7 @@ describe('langBuilder', function() {
 				}).then(function(files) {
 					expect(files).to.have.length(0);
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 		it('should create directory if it not does exist', function(done) {
@@ -357,7 +356,7 @@ describe('langBuilder', function() {
 				}).then(function(stat) {
 					expect(stat.isDirectory()).to.be.true;
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 		it('should write a region to a file', function(done) {
@@ -378,7 +377,7 @@ describe('langBuilder', function() {
 					content = JSON.parse(content);
 					expect(content).to.have.property('A','a');
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 		it('should write a language to a file', function(done) {
@@ -395,7 +394,7 @@ describe('langBuilder', function() {
 					content = JSON.parse(content);
 					expect(content).to.have.property('A','a');
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 	});
