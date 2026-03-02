@@ -1,9 +1,6 @@
 # l10n-language-builder
 
 [![NPM version][npm-image]][npm-url]
-[![Build status][ci-image]][ci-url]
-[![Coverage Status][coverage-image]][coverage-url]
-[![Dependency Status][dependencies-image]][dependencies-url]
 
 Command line utility for building internationalized JSON-based language files
 across multiple regions.
@@ -116,9 +113,3 @@ contributions should make use of them.
 
 [npm-url]: https://www.npmjs.org/package/l10n-language-builder
 [npm-image]: https://img.shields.io/npm/v/l10n-language-builder.svg
-[ci-url]: https://travis-ci.org/Brightspace/l10n-language-builder
-[ci-image]: https://img.shields.io/travis/Brightspace/l10n-language-builder.svg
-[coverage-url]: https://coveralls.io/r/Brightspace/l10n-language-builder?branch=master
-[coverage-image]: https://img.shields.io/coveralls/Brightspace/l10n-language-builder.svg
-[dependencies-url]: https://david-dm.org/brightspace/l10n-language-builder
-[dependencies-image]: https://img.shields.io/david/Brightspace/l10n-language-builder.svg
