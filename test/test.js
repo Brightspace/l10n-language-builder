@@ -3,7 +3,7 @@
 const chai = require('chai'),
 	chaiAsPromised = require('chai-as-promised').default,
 	errors = require('../lib/errors'),
-	fs = require('fs-promise'),
+	fs = require('fs/promises'),
 	langBuilder = require('../'),
 	sinon = require('sinon'),
 	winston = require('winston');
@@ -12,7 +12,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 function removeDir(dir) {
-	return fs.remove(dir);
+	return fs.rm(dir, { recursive: true, force: true });
 }
 
 describe('langBuilder', function() {
@@ -328,7 +328,7 @@ describe('langBuilder', function() {
 	describe('writeFiles', function() {
 
 		beforeEach(function() {
-			return fs.mkdirs('./test/temp')
+			return fs.mkdir('./test/temp', { recursive: true })
 				.then(function() {
 					return fs.writeFile('./test/temp/file.json','stuff');
 				});
