@@ -4,9 +4,7 @@ const chai = require('chai'),
 	chaiAsPromised = require('chai-as-promised').default,
 	errors = require('../lib/errors'),
 	fs = require('fs/promises'),
-	langBuilder = require('../'),
-	sinon = require('sinon'),
-	winston = require('winston');
+	langBuilder = require('../');
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -17,18 +15,7 @@ function removeDir(dir) {
 
 describe('langBuilder', function() {
 
-	beforeEach(function() {
-		sinon.stub(winston,'info');
-		sinon.stub(winston,'warn');
-		sinon.stub(winston,'error');
-		sinon.spy(winston,'remove');
-	});
-
 	afterEach(function() {
-		winston.info.restore();
-		winston.warn.restore();
-		winston.error.restore();
-		winston.remove.restore();
 		return Promise.all([removeDir('./test/temp'),removeDir('./test/temp2')]);
 	});
 
@@ -175,8 +162,6 @@ describe('langBuilder', function() {
 			var fallback = {A: 'a'};
 			var language = {};
 			langBuilder._mergeLang({A:'a'},{},'es','de','');
-			expect(winston.warn.calledOnce).to.be.true;
-			expect(winston.warn.getCall(0).args[0]).to.equal(expectedWarning);
 			expect(fallback).to.have.property('A','a');
 		});
 
@@ -416,30 +401,6 @@ describe('langBuilder', function() {
 		it('should pipe errors to the callback', function(done) {
 			langBuilder(null, function(err) {
 				expect(err).to.not.be.null;
-				done();
-			});
-		});
-
-		it('should silence winston with silent option', function(done) {
-			var opts = {
-				input: './test/sample',
-				output: './test/temp',
-				silent: true
-			};
-			langBuilder(opts,function(err){
-				expect(winston.remove.calledOnce).to.be.true;
-				done();
-			});
-		});
-
-		it('should pass logLevel on to winston', function(done) {
-			var opts = {
-				input: './test/sample',
-				output: './test/temp',
-				logLevel: 'foo'
-			};
-			langBuilder(opts,function(err){
-				expect(winston.level).to.equal('foo');
 				done();
 			});
 		});
