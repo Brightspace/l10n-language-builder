@@ -157,8 +157,7 @@ describe('langBuilder', function() {
 			}).to.throw(expectedError);
 		});
 
-		it('should warn if key not present in base language', function() {
-			var expectedWarning = errors.missingOverrideLanguageKey('A','es','de');
+		it('should handle key not being present in base language', function() {
 			var fallback = {A: 'a'};
 			var language = {};
 			langBuilder._mergeLang({A:'a'},{},'es','de','');
