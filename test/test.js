@@ -3,34 +3,20 @@
 const chai = require('chai'),
 	chaiAsPromised = require('chai-as-promised').default,
 	errors = require('../lib/errors'),
-	fs = require('fs-promise'),
-	langBuilder = require('../'),
-	Q = require('q'),
-	sinon = require('sinon'),
-	winston = require('winston');
+	fs = require('fs/promises'),
+	langBuilder = require('../');
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 function removeDir(dir) {
-	return fs.remove(dir);
+	return fs.rm(dir, { recursive: true, force: true });
 }
 
 describe('langBuilder', function() {
 
-	beforeEach(function() {
-		sinon.stub(winston,'info');
-		sinon.stub(winston,'warn');
-		sinon.stub(winston,'error');
-		sinon.spy(winston,'remove');
-	});
-
 	afterEach(function() {
-		winston.info.restore();
-		winston.warn.restore();
-		winston.error.restore();
-		winston.remove.restore();
-		return Q.all([removeDir('./test/temp'),removeDir('./test/temp2')]);
+		return Promise.all([removeDir('./test/temp'),removeDir('./test/temp2')]);
 	});
 
 	describe('find files', function() {
@@ -76,7 +62,7 @@ describe('langBuilder', function() {
 					expect(file.name).to.equal('empty-FILE');
 					expect(file.content).to.eql({});
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 		it('should return filename and parsed content', function(done) {
@@ -86,7 +72,7 @@ describe('langBuilder', function() {
 					expect(file.name).to.equal('fr-CA');
 					expect(file.content).to.have.property('B','b-CA');
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 	});
@@ -171,13 +157,10 @@ describe('langBuilder', function() {
 			}).to.throw(expectedError);
 		});
 
-		it('should warn if key not present in base language', function() {
-			var expectedWarning = errors.missingOverrideLanguageKey('A','es','de');
+		it('should handle key not being present in base language', function() {
 			var fallback = {A: 'a'};
 			var language = {};
 			langBuilder._mergeLang({A:'a'},{},'es','de','');
-			expect(winston.warn.calledOnce).to.be.true;
-			expect(winston.warn.getCall(0).args[0]).to.equal(expectedWarning);
 			expect(fallback).to.have.property('A','a');
 		});
 
@@ -329,7 +312,7 @@ describe('langBuilder', function() {
 	describe('writeFiles', function() {
 
 		beforeEach(function() {
-			return fs.mkdirs('./test/temp')
+			return fs.mkdir('./test/temp', { recursive: true })
 				.then(function() {
 					return fs.writeFile('./test/temp/file.json','stuff');
 				});
@@ -347,7 +330,7 @@ describe('langBuilder', function() {
 				}).then(function(files) {
 					expect(files).to.have.length(0);
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 		it('should create directory if it not does exist', function(done) {
@@ -357,7 +340,7 @@ describe('langBuilder', function() {
 				}).then(function(stat) {
 					expect(stat.isDirectory()).to.be.true;
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 		it('should write a region to a file', function(done) {
@@ -378,7 +361,7 @@ describe('langBuilder', function() {
 					content = JSON.parse(content);
 					expect(content).to.have.property('A','a');
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 		it('should write a language to a file', function(done) {
@@ -395,7 +378,7 @@ describe('langBuilder', function() {
 					content = JSON.parse(content);
 					expect(content).to.have.property('A','a');
 					done();
-				}).fail(done);
+				}).catch(done);
 		});
 
 	});
@@ -417,30 +400,6 @@ describe('langBuilder', function() {
 		it('should pipe errors to the callback', function(done) {
 			langBuilder(null, function(err) {
 				expect(err).to.not.be.null;
-				done();
-			});
-		});
-
-		it('should silence winston with silent option', function(done) {
-			var opts = {
-				input: './test/sample',
-				output: './test/temp',
-				silent: true
-			};
-			langBuilder(opts,function(err){
-				expect(winston.remove.calledOnce).to.be.true;
-				done();
-			});
-		});
-
-		it('should pass logLevel on to winston', function(done) {
-			var opts = {
-				input: './test/sample',
-				output: './test/temp',
-				logLevel: 'foo'
-			};
-			langBuilder(opts,function(err){
-				expect(winston.level).to.equal('foo');
 				done();
 			});
 		});
