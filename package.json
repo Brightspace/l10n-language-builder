@@ -30,7 +30,7 @@
   "devDependencies": {
     "chai": "^6",
     "chai-as-promised": "^8",
-    "mocha": "^11"
+    "mocha": "^12"
   },
   "dependencies": {
     "winston": "^3",
